@@ -1,0 +1,18 @@
+Package: MoCiS2
+Type: Package
+Title: Tools for working with environmental data at NRM
+Version: 0.1.0
+Author: Martin Sköld
+Maintainer: Martin Sköld <Martin.Skold@nrm.se>
+Description: Tools for working with environmental data at NRM
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
+  tidyverse,
+  openxlsx,
+  fuzzyjoin
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
