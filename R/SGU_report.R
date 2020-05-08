@@ -86,7 +86,10 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
              NRM_PARAMETERKOD = ifelse(str_detect(PROV_KOD_ORIGINAL, "-"), paste0(NRM_PARAMETERKOD, "H"), NRM_PARAMETERKOD)) %>%
       filter(!is.na(MATVARDETAL)) %>%
       left_join(kodlista, by = "NRM_PARAMETERKOD")
-    data <- bind_rows(analysdata, bio_measurements)
+    data <- bind_rows(analysdata, bio_measurements) %>% 
+      group_by(PROV_KOD_ORIGINAL) %>% 
+      fill(PROVPLATS_ID, NAMN_PROVPLATS, ART, DYNTAXA_TAXON_ID, .direction = "downup") %>% 
+      ungroup()
   }
   else
   {

@@ -351,7 +351,7 @@ frame_record <- function(record){
 #'
 #' @examples
 moc_read_prc <- function(prc_path, codes_path = system.file("extdata", "codelist_prc.xls", package = "MoCiS2")){
-  codes <- read_excel(codes_path) %>% select(Group, NRM_CODE, LAB, ORGAN, PARAMETER, label)
+  codes <- readxl::read_excel(codes_path) %>% select(Group, NRM_CODE, LAB, ORGAN, PARAMETER, label)
   tibble(raw = readLines(prc_path)) %>%
     mutate(NRM_CODE = str_extract(raw, "[^+]([^=]*)") %>% trimws() %>% toupper(),
            NRM_CODE = ifelse(str_sub(raw, 1, 1) %in% c("1", "2"), "HEADER", NRM_CODE),
