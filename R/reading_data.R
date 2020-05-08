@@ -196,7 +196,7 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     rename(LATIN = GENUS) %>%
     left_join(koder_art, by = "LATIN") %>%
     left_join(koder_stationer, by = "PROVPLATS_ANALYSMALL") %>%
-    mutate(MATVARDETAL_ANM = ifelse(MATVARDETAL < RAPPORTERINGSGRANS_LOQ, "<", ""),
+    mutate(MATVARDETAL_ANM = ifelse(MATVARDETAL <= RAPPORTERINGSGRANS_LOQ, "<", ""),
            MATV_STD = case_when(MATVARDETAL == DETEKTIONSGRANS_LOD ~ "b",
                                 MATVARDETAL <= RAPPORTERINGSGRANS_LOQ ~ "q",
                                 MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ ""),
