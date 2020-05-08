@@ -159,8 +159,10 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     if (negative_for_nondetect)
       results <- mutate(results, MATVARDETAL = abs(MATVARDETAL))
     uncertainty <- read_lab_file2(path, "MATOSAKERHET", "uncertainty")
-    LOD <- read_lab_file2(path, "DETEKTIONSGRANS_LOD", "LOD")
-    LOQ <- read_lab_file2(path, "RAPPORTERINGSGRANS_LOQ", "LOQ")
+    LOD <- read_lab_file2(path, "DETEKTIONSGRANS_LOD", "LOD") %>% 
+      mutate(DETEKTIONSGRANS_LOD = abs(DETEKTIONSGRANS_LOD))
+    LOQ <- read_lab_file2(path, "RAPPORTERINGSGRANS_LOQ", "LOQ") %>% 
+      mutate(RAPPORTERINGSGRANS_LOQ = abs(RAPPORTERINGSGRANS_LOQ))
     general <- read_lab_file_general(path)
     ackr <- read_lab_file_ackr(path)
     weight <- read_lab_file_weight(path)
