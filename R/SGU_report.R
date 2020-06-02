@@ -71,13 +71,13 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
 
   if (add_bio_pars){
     kodlista <- tribble(
-      ~NRM_PARAMETERKOD, ~PARAMETERNAMN, ~UNIK_PARAMETERKOD, ~LABB, ~ENHET,
-      "ALDR", "Ålder", "CH12/239", "NRM", "ar",
-      "ALDRH", "Ålder (medelvärde)", "CH12/241", "NRM", "ar",
-      "TOTL", "Längd", "CH12/161", "NRM", "cm",
-      "TOTLH", "Längd (medelvärde)", "CH12/163", "NRM", "cm",
-      "TOTV", "Vikt", "CH12/232", "NRM", "g",
-      "TOTVH", "Vikt (medelvärde)", "CH12/234", "NRM", "g",
+      ~NRM_PARAMETERKOD, ~PARAMETERNAMN, ~UNIK_PARAMETERKOD, ~LABB, ~ENHET, ~PROV_BERED, ~PROV_KARL, ~ORGAN, ~ANALYS_INSTR
+      "ALDR", "Ålder", "CH12/239", "NRM", "ar", "EJ_REL", "EJ_REL", "HELKROPP", "Stereomikroskop", 
+      "ALDRH", "Ålder (medelvärde)", "CH12/241", "NRM", "ar", "EJ_REL", "EJ_REL", "HELKROPP", "Stereomikroskop",  
+      "TOTL", "Längd", "CH12/161", "NRM", "cm", "EJ_REL", "EJ_REL", "HELKROPP", "LINJAL",
+      "TOTLH", "Längd (medelvärde)", "CH12/163", "NRM", "cm", "EJ_REL", "EJ_REL", "HELKROPP", "LINJAL", 
+      "TOTV", "Vikt", "CH12/232", "NRM", "g", "EJ_REL", "EJ_REL", "HELKROPP", "VAG",
+      "TOTVH", "Vikt (medelvärde)", "CH12/234", "NRM", "g", "EJ_REL", "EJ_REL", "HELKROPP", "VAG" 
     )
     bio_measurements <- bio_pool_data %>%
       select(PROV_KOD_ORIGINAL, ALDR, TOTV, TOTL) %>%

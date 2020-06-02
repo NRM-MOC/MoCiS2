@@ -125,8 +125,9 @@ read_lab_file_general <- function(path, sheet = "general info"){
          PROV_BERED = as.character(info[8, 2]),
          PROVKARL = as.character(info[9, 2]),
          ANALYS_MET = as.character(info[10, 2]),
-         UTFOR_LABB = ifelse(as.character(info[6, 2]) == "…Click to choose…", "", as.character(info[6, 2])),
-         ANALYS_INSTR = as.character(info[11, 2]))
+         UTFOR_LABB = ifelse(str_detect(info[6, 2], "Click to choose"), "EJ_REL", as.character(info[6, 2])),
+         ANALYS_INSTR = as.character(info[11, 2])) %>% 
+    mutate(LABB = ifelse(str_detect(LABB, "ACES"), "ACES", LABB)) # ACES subdepartment should not be reported
 }
 
 #' Title
