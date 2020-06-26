@@ -29,7 +29,7 @@ moc_write_SGU <- function(data, sheet, file, mall_path =  system.file("extdata",
     )
   data <- data %>%
     arrange(PARAMETERNAMN) %>%
-    mutate_if(is.numeric, ~as.character(.x) %>% str_replace("[.]", ",")) %>%
+    mutate_if(is.numeric, ~round(.x, 5) %>% as.character() %>% str_replace("[.]", ",")) %>%
     mutate_all(as.character) %>%
     select(intersect(names(mall), names(data))) %>%
     distinct()
@@ -85,11 +85,19 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
       mutate(MATVARDETAL = ifelse(is.nan(MATVARDETAL), NA, MATVARDETAL),
              NRM_PARAMETERKOD = ifelse(str_detect(PROV_KOD_ORIGINAL, "-"), paste0(NRM_PARAMETERKOD, "H"), NRM_PARAMETERKOD)) %>%
       filter(!is.na(MATVARDETAL)) %>%
-      left_join(kodlista, by = "NRM_PARAMETERKOD")
+      left_join(kodlista, by = "NRM_PARAMETERKOD") 
     data <- bind_rows(analysdata, bio_measurements) %>% 
       group_by(PROV_KOD_ORIGINAL) %>% 
       fill(PROVPLATS_ID, NAMN_PROVPLATS, ART, DYNTAXA_TAXON_ID, .direction = "downup") %>% 
-      ungroup()
+      ungroup() %>% 
+      mutate(ORGAN = ifelse(str_sub(NRM_PARAMETERKOD, 1, 4) == "ALDR",
+                            case_when(ART == "Gadda" ~ "CLEITRUM",
+                                      ART %in% c("Stromming", "Sill") ~ "FJALL",
+                                      ART %in% c("Tanglake", "Torsk", "Abborre", "Roding") ~ "OTOLIT"),
+                            ORGAN),
+             ORGAN = ifelse((str_sub(NRM_PARAMETERKOD, 1, 4) == "TOTL") & (ART == "Blamussla"), "SKAL",
+                            ORGAN)
+      )
   }
   else
   {

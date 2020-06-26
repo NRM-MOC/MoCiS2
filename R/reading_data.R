@@ -201,6 +201,9 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
            MATV_STD = case_when(MATVARDETAL == DETEKTIONSGRANS_LOD ~ "b",
                                 MATVARDETAL <= RAPPORTERINGSGRANS_LOQ ~ "q",
                                 MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ ""),
+           MATVARDESPAR = ifelse((MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL > DETEKTIONSGRANS_LOD), "Ja", NA),
+           MATOSAKERHET = ifelse(MATVARDETAL <= RAPPORTERINGSGRANS_LOQ, NA, MATOSAKERHET),
+           MATOSAKERHET_ENHET = ifelse(is.na(MATOSAKERHET), NA, MATOSAKERHET_ENHET),
            ART = if_else((ART == "Stromming") & (LOC %in% c("VADO", "FLAD", "KULL", "ABBE", "HABU", "40G7", "UTLV", "UTLA")), "Sill", ART)) %>%
     filter(!is.na(MATVARDETAL)) %>%
     mutate_if(is.character, ~ifelse(str_detect(.x, "Click to choose"), NA, .x))
