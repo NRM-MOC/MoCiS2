@@ -157,8 +157,6 @@ read_lab_file_ackr <- function(path, sheet = "general info"){
 moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = system.file("extdata", "codelist.xlsx", package = "MoCiS2")){
   suppressMessages({
     results <- read_lab_file(path)
-    if (negative_for_nondetect)
-      results <- mutate(results, MATVARDETAL = abs(MATVARDETAL))
     uncertainty <- read_lab_file2(path, "MATOSAKERHET", "uncertainty")
     LOD <- read_lab_file2(path, "DETEKTIONSGRANS_LOD", "LOD") %>% 
       mutate(DETEKTIONSGRANS_LOD = abs(DETEKTIONSGRANS_LOD))
@@ -197,10 +195,13 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     rename(LATIN = GENUS) %>%
     left_join(koder_art, by = "LATIN") %>%
     left_join(koder_stationer, by = "PROVPLATS_ANALYSMALL") %>%
-    mutate(MATVARDETAL_ANM = ifelse(MATVARDETAL <= RAPPORTERINGSGRANS_LOQ, "<", ""),
+    mutate(MATVARDETAL_ANM = if_else((abs(MATVARDETAL) <= RAPPORTERINGSGRANS_LOQ) |
+                                      ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
+           MATVARDETAL = ifelse(negative_for_nondetect, abs(MATVARDETAL), MATVARDETAL),
            MATV_STD = case_when(MATVARDETAL == DETEKTIONSGRANS_LOD ~ "b",
                                 MATVARDETAL <= RAPPORTERINGSGRANS_LOQ ~ "q",
-                                MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ ""),
+                                MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ "",
+                                is.na(DETEKTIONSGRANS_LOD) & is.na(RAPPORTERINGSGRANS_LOQ) ~ ""),
            MATVARDESPAR = ifelse((MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL > DETEKTIONSGRANS_LOD), "Ja", NA),
            MATOSAKERHET = ifelse(MATVARDETAL <= RAPPORTERINGSGRANS_LOQ, NA, MATOSAKERHET),
            MATOSAKERHET_ENHET = ifelse(is.na(MATOSAKERHET), NA, MATOSAKERHET_ENHET),
