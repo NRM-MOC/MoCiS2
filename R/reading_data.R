@@ -272,7 +272,7 @@ add_id_cols <- function(record){
   accnr <- filter(record, str_detect(NRM_CODE, "ACCNR")) %>% pull(VALUE)
   if (length(accnr) == 0)
     warning(paste("No ACCNR for record:", record$row[1]))
-  if (length(accnr) == 0)
+  if (length(accnr) > 1)
     warning(paste("Multiple ACCNR for record:", record$row[1], "picking first."))
   mutate(record,
          ACCNR = accnr[1],
