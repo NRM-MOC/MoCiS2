@@ -255,7 +255,12 @@ add_header_info <- function(record){
          LOC = str_sub(header, 46, 49),
          MYEAR = as.numeric(str_sub(header, 25, 26)),
          MYEAR = ifelse(MYEAR > 50, MYEAR + 1900, MYEAR + 2000),
-         PROVTAG_DAT = as.Date(str_sub(header, 1, 7), "%Y%W%u")
+         PROVTAG_DAT = case_when(
+           (WEEK < 53) & (DAY %in% 1:7) ~ as.character(as.Date(str_sub(header, 1, 7), "%Y%W%u")),
+           (WEEK > 79) ~ as.character(YEAR), # Week unknown
+           (DAY %in% c(0, 8, 9)) ~ as.Date(paste0(str_sub(header, 1, 6), "3"), "%Y%W%u") %>% 
+             str_sub(1, 7) # Day unknown, week uncertain
+         )
   )
 }
 
