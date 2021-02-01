@@ -70,7 +70,7 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
     rename(PROV_KOD_ORIGINAL = PROV_KOD_ORIGINAL_POOL)
 
   if (add_bio_pars){
-    kodlista <- tribble( # This codelist is depreceated
+    kodlista <- tribble( # This codelist is deprecated
       ~NRM_PARAMETERKOD, ~PARAMETERNAMN, ~UNIK_PARAMETERKOD, ~LABB, ~ENHET, ~PROV_BERED, ~PROVKARL, ~ORGAN, ~ANALYS_INSTR,
       "ALDR", "Ålder", "CH12/239", "NRM", "ar", "EJ_REL", "EJ_REL", "HELKROPP", "Stereomikroskop", 
       "ALDRH", "Ålder (medelvärde)", "CH12/241", "NRM", "ar", "EJ_REL", "EJ_REL", "HELKROPP", "Stereomikroskop",  
