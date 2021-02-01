@@ -70,8 +70,8 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
     rename(PROV_KOD_ORIGINAL = PROV_KOD_ORIGINAL_POOL)
 
   if (add_bio_pars){
-    kodlista <- tribble(
-      ~NRM_PARAMETERKOD, ~PARAMETERNAMN, ~UNIK_PARAMETERKOD, ~LABB, ~ENHET, ~PROV_BERED, ~PROV_KARL, ~ORGAN, ~ANALYS_INSTR,
+    kodlista <- tribble( # This codelist is depreceated
+      ~NRM_PARAMETERKOD, ~PARAMETERNAMN, ~UNIK_PARAMETERKOD, ~LABB, ~ENHET, ~PROV_BERED, ~PROVKARL, ~ORGAN, ~ANALYS_INSTR,
       "ALDR", "Ålder", "CH12/239", "NRM", "ar", "EJ_REL", "EJ_REL", "HELKROPP", "Stereomikroskop", 
       "ALDRH", "Ålder (medelvärde)", "CH12/241", "NRM", "ar", "EJ_REL", "EJ_REL", "HELKROPP", "Stereomikroskop",  
       "TOTL", "Längd", "CH12/161", "NRM", "cm", "EJ_REL", "EJ_REL", "HELKROPP", "LINJAL",
@@ -79,6 +79,9 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
       "TOTV", "Vikt", "CH12/232", "NRM", "g", "EJ_REL", "EJ_REL", "HELKROPP", "VAG",
       "TOTVH", "Vikt (medelvärde)", "CH12/234", "NRM", "g", "EJ_REL", "EJ_REL", "HELKROPP", "VAG" 
     )
+    kodlista <- readxl::read_excel(system.file("extdata", "codelist.xlsx", package = "MoCiS2"), sheet = "PARAMETRAR")  %>%
+      select(NRM_PARAMETERKOD, PARAMETERNAMN, UNIK_PARAMETERKOD, LABB, ENHET, PROV_BERED, PROVKARL, ANALYS_INSTR, ANALYS_MET, ACKREDITERAD_MET) %>% 
+      mutate(ORGAN = "HELKROPP")
     bio_measurements <- bio_pool_data %>%
       select(PROV_KOD_ORIGINAL, ALDR, TOTV, TOTL) %>%
       pivot_longer(c("ALDR", "TOTV", "TOTL"), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL") %>%
