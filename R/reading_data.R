@@ -127,7 +127,8 @@ read_lab_file_general <- function(path, sheet = "general info"){
          ANALYS_MET = as.character(info[10, 2]),
          UTFOR_LABB = ifelse(str_detect(info[6, 2], "Click to choose"), "EJ_REL", as.character(info[6, 2])),
          ANALYS_INSTR = as.character(info[11, 2])) %>% 
-    mutate(LABB = ifelse(str_detect(LABB, "ACES"), "ACES", LABB)) # ACES subdepartment should not be reported
+    mutate(LABB = ifelse(str_detect(LABB, "ACES"), "ACES", LABB), # ACES subdepartment should not be reported
+           LABB = ifelse(str_detect(LABB, "Ume"), "UMU-KEM_INST", LABB)) 
 }
 
 #' Title
@@ -201,9 +202,10 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
            MATV_STD = case_when(MATVARDETAL == DETEKTIONSGRANS_LOD ~ "b",
                                 MATVARDETAL <= RAPPORTERINGSGRANS_LOQ ~ "q",
                                 MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ "",
+                                (MATVARDETAL > DETEKTIONSGRANS_LOD) & (is.na(RAPPORTERINGSGRANS_LOQ)) ~ "", 
                                 is.na(DETEKTIONSGRANS_LOD) & is.na(RAPPORTERINGSGRANS_LOQ) ~ ""),
            MATVARDESPAR = ifelse((MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL > DETEKTIONSGRANS_LOD), "Ja", NA),
-           MATOSAKERHET = ifelse(MATVARDETAL <= RAPPORTERINGSGRANS_LOQ, NA, MATOSAKERHET),
+           MATOSAKERHET = ifelse(MATV_STD != "", NA, MATOSAKERHET),
            MATOSAKERHET_ENHET = ifelse(is.na(MATOSAKERHET), NA, MATOSAKERHET_ENHET),
            ART = if_else((ART == "Stromming") & (LOC %in% c("VADO", "FLAD", "KULL", "ABBE", "HABU", "40G7", "UTLV", "UTLA")), "Sill", ART)) %>%
     filter(!is.na(MATVARDETAL)) %>%
