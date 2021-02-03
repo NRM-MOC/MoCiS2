@@ -210,6 +210,16 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
            ART = if_else((ART == "Stromming") & (LOC %in% c("VADO", "FLAD", "KULL", "ABBE", "HABU", "40G7", "UTLV", "UTLA")), "Sill", ART)) %>%
     filter(!is.na(MATVARDETAL)) %>%
     mutate_if(is.character, ~ifelse(str_detect(.x, "Click to choose"), NA, .x))
+  # Need to grab "NRM_PARAMETERKOD", "PROV_BERED", "PROVKARL", "ANALYS_MET", "ANALYS_INSTR" from codelist for prc-type measurements
+  koder_prc <- readxl::read_excel(codes_path, sheet = "PARAMETRAR")  %>%
+    select(c("NRM_PARAMETERKOD", "PROV_BERED", "PROVKARL", "ANALYS_MET", "ANALYS_INSTR")) %>% 
+    filter(str_detect(NRM_PARAMETERKOD, "FPRC|TPRC"))
+  data_prc <- filter(data, str_detect(NRM_PARAMETERKOD, "FPRC|TPRC")) %>% 
+    select(-c("PROV_BERED", "PROVKARL", "ANALYS_MET", "ANALYS_INSTR")) %>% 
+    left_join(koder_prc, by = "NRM_PARAMETERKOD")
+  data <- bind_rows(filter(data, !str_detect(NRM_PARAMETERKOD, "FPRC|TPRC")),
+                    data_prc)
+  
   if (max(data$ARTDIST, na.rm = TRUE) > 0){
     message("Warning: The following species were fuzzy matched")
     data %>% filter(ARTDIST > 0) %>% select(ART, LATIN) %>%
