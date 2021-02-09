@@ -128,7 +128,7 @@ read_lab_file_general <- function(path, sheet = "general info"){
          UTFOR_LABB = ifelse(str_detect(info[6, 2], "Click to choose"), "EJ_REL", as.character(info[6, 2])),
          ANALYS_INSTR = as.character(info[11, 2])) %>% 
     mutate(LABB = ifelse(str_detect(LABB, "ACES"), "ACES", LABB), # ACES subdepartment should not be reported
-           LABB = ifelse(str_detect(LABB, "Ume"), "UMU-KEM_INST", LABB)) 
+           LABB = ifelse(str_detect(LABB, "Ume"), "UMU_KEM_INST", LABB)) 
 }
 
 #' Title
