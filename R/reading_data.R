@@ -202,7 +202,7 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
            MATV_STD = case_when((MATVARDETAL == DETEKTIONSGRANS_LOD) & (MATVARDETAL_ANM == "<") ~ "b",
                                 (MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL_ANM == "<") ~ "q",
                                 MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ "",
-                                (MATVARDETAL > DETEKTIONSGRANS_LOD) & (is.na(RAPPORTERINGSGRANS_LOQ)) ~ "", 
+                                (MATVARDETAL >= DETEKTIONSGRANS_LOD) & (is.na(RAPPORTERINGSGRANS_LOQ)) ~ "", 
                                 is.na(DETEKTIONSGRANS_LOD) & is.na(RAPPORTERINGSGRANS_LOQ) ~ ""),
            MATVARDESPAR = ifelse((MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL > DETEKTIONSGRANS_LOD), "Ja", NA),
            MATOSAKERHET = ifelse(MATV_STD != "", NA, MATOSAKERHET),
