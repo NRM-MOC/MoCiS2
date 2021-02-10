@@ -80,7 +80,7 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
       "TOTVH", "Vikt (medelvärde)", "CH12/234", "NRM", "g", "EJ_REL", "EJ_REL", "HELKROPP", "VAG" 
     )
     kodlista <- readxl::read_excel(system.file("extdata", "codelist.xlsx", package = "MoCiS2"), sheet = "PARAMETRAR")  %>%
-      select(NRM_PARAMETERKOD, PARAMETERNAMN, UNIK_PARAMETERKOD, LABB, UTFOR_LABB, ENHET, PROV_BERED, PROVKARL, ANALYS_INSTR, ANALYS_MET, ACKREDITERAD_MET) %>% 
+      select(NRM_PARAMETERKOD, PARAMETERNAMN, UNIK_PARAMETERKOD, LABB, UTFOR_LABB, ENHET, PROV_BERED, PROVKARL, ANALYS_INSTR, ANALYS_MET, ACKREDITERAD_MET, PROV_LAGR) %>% 
       mutate(ORGAN = "HELKROPP")
     bio_measurements <- bio_pool_data %>%
       select(PROV_KOD_ORIGINAL, ALDR, TOTV, TOTL) %>%
