@@ -199,12 +199,12 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     mutate(MATVARDETAL_ANM = if_else((abs(MATVARDETAL) <= RAPPORTERINGSGRANS_LOQ) |
                                       ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
            MATVARDETAL = if_else(rep(negative_for_nondetect, n()), abs(MATVARDETAL), MATVARDETAL),
-           MATV_STD = case_when((MATVARDETAL == DETEKTIONSGRANS_LOD) & (MATVARDETAL_ANM == "<") ~ "b",
-                                (MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL_ANM == "<") ~ "q",
+           MATV_STD = case_when(near(MATVARDETAL, DETEKTIONSGRANS_LOD) & (MATVARDETAL_ANM == "<") ~ "b",
+                                ((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) & (MATVARDETAL_ANM == "<") ~ "q",
                                 MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ "",
-                                (MATVARDETAL >= DETEKTIONSGRANS_LOD) & (is.na(RAPPORTERINGSGRANS_LOQ)) ~ "", 
+                                ((MATVARDETAL > DETEKTIONSGRANS_LOD) | near(MATVARDETAL, DETEKTIONSGRANS_LOD)) & (is.na(RAPPORTERINGSGRANS_LOQ)) ~ "", 
                                 is.na(DETEKTIONSGRANS_LOD) & is.na(RAPPORTERINGSGRANS_LOQ) ~ ""),
-           MATVARDESPAR = ifelse((MATVARDETAL <= RAPPORTERINGSGRANS_LOQ) & (MATVARDETAL > DETEKTIONSGRANS_LOD), "Ja", NA),
+           MATVARDESPAR = ifelse(((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) & (MATVARDETAL > DETEKTIONSGRANS_LOD), "Ja", NA),
            MATOSAKERHET = ifelse(MATV_STD != "", NA, MATOSAKERHET),
            MATOSAKERHET_ENHET = ifelse(is.na(MATOSAKERHET), NA, MATOSAKERHET_ENHET),
            ART = if_else((ART == "Stromming") & (LOC %in% c("VADO", "FLAD", "KULL", "ABBE", "HABU", "40G7", "UTLV", "UTLA")), "Sill", ART)) %>%
