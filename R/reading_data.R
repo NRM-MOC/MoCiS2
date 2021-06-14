@@ -33,7 +33,7 @@ unpool <- function(PROV_KOD_ORIGINAL){
 #'
 #' @examples
 read_lab_file <- function(path, sheet = "results"){
-  readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A")) %>%
+  readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A", "-99.9")) %>%
     rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL  = ...4, ORGAN = ...5) %>%
     filter(!is.na(PROV_KOD_ORIGINAL)) %>%
     mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
