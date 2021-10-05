@@ -23,6 +23,7 @@ moc_write_SGU <- function(data, sheet, file, mall_path =  system.file("extdata",
            PROVPLATS_MILJO = ifelse(program == "hav", "HAV-BRACKV", "SJO-SOTV-RINN"),
            PLATTFORM = ifelse(program == "hav", "FISKEBAT", "SMABAT"),
            PLATTFORM = ifelse(ART == "Blamussla", "SAKNAS", PLATTFORM),
+           PLATTFORM = ifelse(ART %in% c("Fisktarna", "Sillgrissla", "Strandskata"),"SAKNAS",PLATTFORM),
            PROVTAG_MET = ifelse(ART == "Blamussla", "Dykning", "Natfiske"),
            PROVTAG_MET = ifelse(ART %in% c("Fisktarna", "Sillgrissla", "Strandskata"), "Aggplockning", PROVTAG_MET),
            MATOSAKERHET_TYP = ifelse(is.na(MATOSAKERHET), NA, "U2")
