@@ -32,15 +32,27 @@ unpool <- function(PROV_KOD_ORIGINAL){
 #'
 #'
 #' @examples
-read_lab_file <- function(path, sheet = "results"){
-  readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A", "-99.9")) %>%
-    rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL  = ...4, ORGAN = ...5) %>%
-    filter(!is.na(PROV_KOD_ORIGINAL)) %>%
-    mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
-    mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
-    mutate_at(-(1:5), as.numeric) %>%
-    select(-contains("..."))%>%
-    pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL")
+read_lab_file <- function(path, sheet = "results", .has_provid = TRUE){
+  if (.has_provid) {
+    readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A", "-99.9")) %>%
+      rename(PROV_KOD_ORIGINAL = ...1, RAPPORT_KOD_LABB = ...2, PROV_KOD_LABB = ...3, GENUS = ...4, PROVPLATS_ANALYSMALL  = ...5, ORGAN = ...6) %>%
+      filter(!is.na(PROV_KOD_ORIGINAL)) %>%
+      mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
+      mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
+      mutate_at(-(1:6), as.numeric) %>%
+      select(-contains("..."))%>%
+      pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL")
+  } else {
+    readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A", "-99.9")) %>%
+      rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL  = ...4, ORGAN = ...5) %>%
+      filter(!is.na(PROV_KOD_ORIGINAL)) %>%
+      mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
+      mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
+      mutate_at(-(1:5), as.numeric) %>%
+      select(-contains("..."))%>%
+      pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL")    
+  }
+  
 }
 
 #' Title
@@ -53,15 +65,27 @@ read_lab_file <- function(path, sheet = "results"){
 #'
 #'
 #' @examples
-read_lab_file2 <- function(path, variable, sheet){
-  readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A")) %>%
-    rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL = ...4) %>%
-    filter(!is.na(PROV_KOD_ORIGINAL)) %>%
-    mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
-    mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
-    mutate_at(-(1:4), as.numeric) %>%
-    select(-PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
-    pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = variable)
+read_lab_file2 <- function(path, variable, sheet, .has_provid = TRUE){
+  if (.has_provid){
+    readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A")) %>%
+      rename(PROV_KOD_ORIGINAL = ...1, RAPPORT_KOD_LABB = ...2, PROV_KOD_LABB = ...3, GENUS = ...4, PROVPLATS_ANALYSMALL  = ...5) %>%
+      filter(!is.na(PROV_KOD_ORIGINAL), PROV_KOD_ORIGINAL != "0") %>%
+      mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
+      mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
+      mutate_at(-(1:5), as.numeric) %>%
+      select(-PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = variable)    
+  } else {
+    readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A")) %>%
+      rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL = ...4) %>%
+      filter(!is.na(PROV_KOD_ORIGINAL), PROV_KOD_ORIGINAL != "0") %>%
+      mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
+      mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
+      mutate_at(-(1:4), as.numeric) %>%
+      select(-PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = variable)    
+  }
+  
 }
 
 #' Title
@@ -73,7 +97,7 @@ read_lab_file2 <- function(path, variable, sheet){
 #'
 #'
 #' @examples
-read_lab_file_date <- function(path, sheet = "date of analysis"){
+read_lab_file_date <- function(path, sheet = "date of analysis", .has_provid = TRUE){
   fix_date <- Vectorize(function(x){
     x <- as.numeric(x)
     if (is.na(x))
@@ -83,15 +107,27 @@ read_lab_file_date <- function(path, sheet = "date of analysis"){
     else
       as.Date(as.character(x), "%Y%m%d") %>% as.character()
   })
-  readxl::read_excel(path, sheet = sheet, na = c("-99.99", "N/A")) %>%
-    rename(PROV_KOD_ORIGINAL = 1, PROV_KOD_LABB = 2, GENUS = 3, PROVPLATS_ANALYSMALL = 4) %>%
-    filter(!is.na(PROV_KOD_ORIGINAL), !(PROV_KOD_ORIGINAL == 0)) %>%
-    mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
-    mutate_at(-(1:4), as.numeric) %>%
-    select(-PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
-    filter(PROV_KOD_ORIGINAL != "0") %>%
-    pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = "ANALYS_DAT") %>%
-    mutate(ANALYS_DAT = fix_date(ANALYS_DAT))
+  if (.has_provid){
+    readxl::read_excel(path, sheet = sheet, na = c("-99.99", "N/A")) %>%
+      rename(PROV_KOD_ORIGINAL = 1, RAPPORT_KOD_LABB = 2, PROV_KOD_LABB = 3, GENUS = 4, PROVPLATS_ANALYSMALL = 5) %>%
+      filter(!is.na(PROV_KOD_ORIGINAL), !(PROV_KOD_ORIGINAL == 0)) %>%
+      mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
+      mutate_at(-(1:5), as.numeric) %>%
+      select(-PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      filter(PROV_KOD_ORIGINAL != "0") %>%
+      pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = "ANALYS_DAT") %>%
+      mutate(ANALYS_DAT = fix_date(ANALYS_DAT))   
+  } else {
+    readxl::read_excel(path, sheet = sheet, na = c("-99.99", "N/A")) %>%
+      rename(PROV_KOD_ORIGINAL = 1, PROV_KOD_LABB = 2, GENUS = 3, PROVPLATS_ANALYSMALL = 4) %>%
+      filter(!is.na(PROV_KOD_ORIGINAL), !(PROV_KOD_ORIGINAL == 0)) %>%
+      mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
+      mutate_at(-(1:4), as.numeric) %>%
+      select(-PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      filter(PROV_KOD_ORIGINAL != "0") %>%
+      pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = "ANALYS_DAT") %>%
+      mutate(ANALYS_DAT = fix_date(ANALYS_DAT))
+  }
 }
 
 #' Title
@@ -103,11 +139,18 @@ read_lab_file_date <- function(path, sheet = "date of analysis"){
 #'
 #'
 #' @examples
-read_lab_file_weight <- function(path, sheet = 8){
+read_lab_file_weight <- function(path, sheet = 8, .has_provid = TRUE){
   data <- readxl::read_excel(path = path, sheet = sheet)
-  names(data)[1:6] <- c("PROV_KOD_ORIGINAL", "PROV_KOD_LABB", "GENUS", "PROVPLATS_ANALYSMALL", "DWEIGHT", "WWEIGHT")
-  select(data, -PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
-    filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))
+  if (.has_provid){
+    names(data)[1:7] <- c("PROV_KOD_ORIGINAL", "RAPPORT_KOD_LABB", "PROV_KOD_LABB", "GENUS", "PROVPLATS_ANALYSMALL", "DWEIGHT", "WWEIGHT")
+    select(data, -PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))    
+  } else {
+    names(data)[1:6] <- c("PROV_KOD_ORIGINAL", "PROV_KOD_LABB", "GENUS", "PROVPLATS_ANALYSMALL", "DWEIGHT", "WWEIGHT")
+    select(data, -PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))    
+  }
+
 }
 
 #' Title
@@ -150,12 +193,13 @@ read_lab_file_ackr <- function(path, sheet = "general info"){
 #' @param path
 #' @param negative_for_nondetect
 #' @param codes_path
+#' @param has_provid This should be FALSE for old sheets without a column for NRM provid
 #'
 #' @return
 #' @export
 #'
 #' @examples
-moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = system.file("extdata", "codelist.xlsx", package = "MoCiS2")){
+moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = system.file("extdata", "codelist.xlsx", package = "MoCiS2"), has_provid = TRUE){
   suppressMessages({
     results <- read_lab_file(path)
     uncertainty <- read_lab_file2(path, "MATOSAKERHET", "uncertainty")
@@ -171,16 +215,16 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
       select(NRM_PARAMETERKOD, PARAMETERNAMN, UNIK_PARAMETERKOD, ENHET, MATOSAKERHET_ENHET, PROV_LAGR)
     koder_stationer <- select(results, PROVPLATS_ANALYSMALL) %>% distinct() %>%
       fuzzyjoin::stringdist_left_join(readxl::read_excel(codes_path, sheet = "STATIONER") %>%
-                             select(-contains("...")) %>%
-                             distinct(),
-                           by = "PROVPLATS_ANALYSMALL", distance_col = "LOKDIST") %>%
+                                        select(-contains("...")) %>%
+                                        distinct(),
+                                      by = "PROVPLATS_ANALYSMALL", distance_col = "LOKDIST") %>%
       select(-PROVPLATS_ANALYSMALL.y, PROVPLATS_ANALYSMALL = PROVPLATS_ANALYSMALL.x) %>%
       distinct()
     koder_art <- select(results, LATIN = GENUS) %>% distinct() %>%
       fuzzyjoin::stringdist_left_join(readxl::read_excel(codes_path, sheet = "ARTER") %>%
-                             select(-contains("...")) %>%
-                             distinct(),
-                           by = "LATIN", distance_col = "ARTDIST") %>%
+                                        select(-contains("...")) %>%
+                                        distinct(),
+                                      by = "LATIN", distance_col = "ARTDIST") %>%
       select(-LATIN.y, LATIN = LATIN.x) %>%
       distinct()
   })
@@ -197,7 +241,7 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     left_join(koder_art, by = "LATIN") %>%
     left_join(koder_stationer, by = "PROVPLATS_ANALYSMALL") %>%
     mutate(MATVARDETAL_ANM = if_else((abs(MATVARDETAL) <= RAPPORTERINGSGRANS_LOQ) |
-                                      ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
+                                       ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
            MATVARDETAL = if_else(rep(negative_for_nondetect, n()), abs(MATVARDETAL), MATVARDETAL),
            MATV_STD = case_when((near(MATVARDETAL, DETEKTIONSGRANS_LOD) | (MATVARDETAL < DETEKTIONSGRANS_LOD)) & (MATVARDETAL_ANM == "<") ~ "b",
                                 ((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) & (MATVARDETAL_ANM == "<") ~ "q",
