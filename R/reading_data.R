@@ -201,16 +201,16 @@ read_lab_file_ackr <- function(path, sheet = "general info"){
 #' @examples
 moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = system.file("extdata", "codelist.xlsx", package = "MoCiS2"), has_provid = TRUE){
   suppressMessages({
-    results <- read_lab_file(path)
-    uncertainty <- read_lab_file2(path, "MATOSAKERHET", "uncertainty")
-    LOD <- read_lab_file2(path, "DETEKTIONSGRANS_LOD", "LOD") %>% 
+    results <- read_lab_file(path, .has_provid = has_provid)
+    uncertainty <- read_lab_file2(path, "MATOSAKERHET", "uncertainty", .has_provid = has_provid)
+    LOD <- read_lab_file2(path, "DETEKTIONSGRANS_LOD", "LOD", .has_provid = has_provid) %>% 
       mutate(DETEKTIONSGRANS_LOD = abs(DETEKTIONSGRANS_LOD))
-    LOQ <- read_lab_file2(path, "RAPPORTERINGSGRANS_LOQ", "LOQ") %>% 
+    LOQ <- read_lab_file2(path, "RAPPORTERINGSGRANS_LOQ", "LOQ", .has_provid = has_provid) %>% 
       mutate(RAPPORTERINGSGRANS_LOQ = abs(RAPPORTERINGSGRANS_LOQ))
     general <- read_lab_file_general(path)
     ackr <- read_lab_file_ackr(path)
-    weight <- read_lab_file_weight(path)
-    dates <- read_lab_file_date(path)
+    weight <- read_lab_file_weight(path, .has_provid = has_provid)
+    dates <- read_lab_file_date(path, .has_provid = has_provid)
     koder_substans <- readxl::read_excel(codes_path, sheet = "PARAMETRAR")  %>%
       select(NRM_PARAMETERKOD, PARAMETERNAMN, UNIK_PARAMETERKOD, ENHET, MATOSAKERHET_ENHET, PROV_LAGR)
     koder_stationer <- select(results, PROVPLATS_ANALYSMALL) %>% distinct() %>%
