@@ -82,7 +82,7 @@ read_lab_file2 <- function(path, variable, sheet, .has_provid = TRUE){
       mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
       mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
       mutate_at(-(1:4), as.numeric) %>%
-      select(-PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      select(-PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
       pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = variable)    
   }
   
