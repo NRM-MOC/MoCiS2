@@ -40,8 +40,9 @@ read_lab_file <- function(path, sheet = "results", .has_provid = TRUE){
       mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
       mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
       mutate_at(-(1:6), as.numeric) %>%
-      select(-contains("..."))%>%
-      pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL")
+      select(-contains("...")) %>%
+      pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL") |> 
+      filter(!is.na(MATVARDETAL))
   } else {
     readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A", "-99.9")) %>%
       rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL  = ...4, ORGAN = ...5) %>%
@@ -50,7 +51,8 @@ read_lab_file <- function(path, sheet = "results", .has_provid = TRUE){
       mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
       mutate_at(-(1:5), as.numeric) %>%
       select(-contains("..."))%>%
-      pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL")    
+      pivot_longer(-(PROV_KOD_ORIGINAL:ORGAN), names_to = "NRM_PARAMETERKOD", values_to = "MATVARDETAL")  |> 
+      filter(!is.na(MATVARDETAL))  
   }
   
 }
