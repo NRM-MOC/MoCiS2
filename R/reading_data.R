@@ -146,10 +146,12 @@ read_lab_file_weight <- function(path, sheet = 8, .has_provid = TRUE){
   if (.has_provid){
     names(data)[1:7] <- c("PROV_KOD_ORIGINAL", "RAPPORT_KOD_LABB", "PROV_KOD_LABB", "GENUS", "PROVPLATS_ANALYSMALL", "DWEIGHT", "WWEIGHT")
     select(data, -PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      mutate(DWEIGHT = as.numeric(DWEIGHT), WWEIGHT = as.numeric(WWEIGHT)) %>%
       filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))    
   } else {
     names(data)[1:6] <- c("PROV_KOD_ORIGINAL", "PROV_KOD_LABB", "GENUS", "PROVPLATS_ANALYSMALL", "DWEIGHT", "WWEIGHT")
     select(data, -PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      mutate(DWEIGHT = as.numeric(DWEIGHT), WWEIGHT = as.numeric(WWEIGHT)) %>%
       filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))    
   }
 
