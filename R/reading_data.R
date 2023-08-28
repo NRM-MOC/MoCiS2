@@ -313,6 +313,7 @@ add_header_info <- function(record){
          WEEK = as.numeric(str_sub(header, 5, 6)),
          DAY= as.numeric(str_sub(header, 7, 7)),
          GENUS = str_sub(header, 12, 15),
+         SEX2 = str_sub(header, 45, 45),
          LOC = str_sub(header, 46, 49),
          MYEAR = as.numeric(str_sub(header, 25, 26)),
          MYEAR = ifelse(MYEAR > 50, MYEAR + 1900, MYEAR + 2000),
