@@ -365,18 +365,19 @@ add_bio_cols <- function(record){
                                                       str_extract(VALUE, "[^,]+$") == "10" ~ "OPERCULUM"),
                         ORGAN),
          VALUE = ifelse(NRM_CODE %in% c("TOTV", "TOTL", "KRPL", "ALDR"), str_extract(VALUE, "[^,]*"), VALUE),
-         TOTL = ifelse(NRM_CODE == "TOTL", as.numeric(VALUE), NA),
+         TOTL = ifelse(NRM_CODE %in% c("TOTL", "TOTLH"), as.numeric(VALUE), NA),
          KRPL = ifelse(NRM_CODE == "KRPL", as.numeric(VALUE), NA),
-         TOTV = ifelse(NRM_CODE == "TOTV", as.numeric(VALUE), NA),
-         ALDR = ifelse(NRM_CODE == "ALDR", as.numeric(VALUE), NA),
+         TOTV = ifelse(NRM_CODE %in% c("TOTV", "TOTVH"), as.numeric(VALUE), NA),
+         ALDR = ifelse(NRM_CODE %in% c("ALDR", "ALDRH"), as.numeric(VALUE), NA),
          ANM = ifelse(NRM_CODE %in% c("ANM", "NOTE"), VALUE, NA),
          SEX = ifelse(NRM_CODE == "SEX", as.numeric(VALUE), NA),
          NHOM = ifelse(str_length(ACCNR) == 17, as.numeric(str_sub(ACCNR, 13, 17)) - as.numeric(str_sub(ACCNR, 7, 11)) + 1, 1),
+         NHOM = ifelse(NRM_CODE == "NHOM", str_extract(VALUE, "[0-9]+") |> as.numeric(), NHOM),
+         NHOM = max(NHOM),
          NRM_CODE = ifelse((NRM_CODE %in% c("TOTV", "TOTL", "KRPL", "ALDR")) & str_detect(ACCNR, "-"), paste0(NRM_CODE, "H"), NRM_CODE)
   ) %>%
     fill(TOTL, KRPL, TOTV, ALDR, ANM, SEX, .direction = "downup")
 }
-
 #' Title
 #'
 #' @param record
