@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-moc_write_SGU <- function(data, sheet, file, mall_path =  system.file("extdata", "miljogifter-leveransmall.xlsx", package = "MoCiS2"), program = "none"){
+moc_write_SGU <- function(data, sheet, file, mall_path =  system.file("extdata", "miljogifter-leveransmall_2024.xlsx", package = "MoCiS2"), program = "none"){
   options(scipen = 999)
   mall <- readxl::read_excel(mall_path, sheet = sheet)
   if (program %in% c("hav", "limn"))
@@ -20,6 +20,7 @@ moc_write_SGU <- function(data, sheet, file, mall_path =  system.file("extdata",
            PROVTAG_ORG = "NRM",
            ACKR_PROV = "Nej",
            DIREKT_BEHA = "FRYST",
+           PROVDATA_TYP = 'BIOTA',
            PROVPLATS_MILJO = ifelse(program == "hav", "HAV-BRACKV", "SJO-SOTV-RINN"),
            PLATTFORM = ifelse(program == "hav", "FISKEBAT", "SMABAT"),
            PLATTFORM = ifelse(ART == "Blamussla", "SAKNAS", PLATTFORM),
