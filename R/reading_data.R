@@ -203,7 +203,7 @@ read_lab_file_ackr <- function(path, sheet = "general info"){
 #' @export
 #'
 #' @examples
-moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = system.file("extdata", "codelist.xlsx", package = "MoCiS2"), has_provid = TRUE){
+moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = system.file("extdata", "codelist.xlsx", package = "MoCiS2"), fuzzy_stations = TRUE, has_provid = TRUE){
   suppressMessages({
     results <- read_lab_file(path, .has_provid = has_provid)
     uncertainty <- read_lab_file2(path, "MATOSAKERHET", "uncertainty", .has_provid = has_provid)
@@ -217,13 +217,21 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     dates <- read_lab_file_date(path, .has_provid = has_provid)
     koder_substans <- readxl::read_excel(codes_path, sheet = "PARAMETRAR")  %>%
       select(NRM_PARAMETERKOD, PARAMETERNAMN, UNIK_PARAMETERKOD, ENHET, MATOSAKERHET_ENHET, PROV_LAGR)
-    koder_stationer <- select(results, PROVPLATS_ANALYSMALL) %>% distinct() %>%
-      fuzzyjoin::stringdist_left_join(readxl::read_excel(codes_path, sheet = "STATIONER") %>%
-                                        select(-contains("...")) %>%
-                                        distinct(),
-                                      by = "PROVPLATS_ANALYSMALL", distance_col = "LOKDIST") %>%
-      select(-PROVPLATS_ANALYSMALL.y, PROVPLATS_ANALYSMALL = PROVPLATS_ANALYSMALL.x) %>%
-      distinct()
+    if (fuzzy_stations == TRUE){
+      koder_stationer <- select(results, PROVPLATS_ANALYSMALL) %>% distinct() %>%
+        fuzzyjoin::stringdist_left_join(readxl::read_excel(codes_path, sheet = "STATIONER") %>%
+                                          select(-contains("...")) %>%
+                                          distinct(),
+                                        by = "PROVPLATS_ANALYSMALL", distance_col = "LOKDIST") %>%
+        select(-PROVPLATS_ANALYSMALL.y, PROVPLATS_ANALYSMALL = PROVPLATS_ANALYSMALL.x) %>%
+        distinct()
+    } else {
+      koder_stationer <- select(results, PROVPLATS_ANALYSMALL) %>% distinct() %>%
+        left_join(readxl::read_excel(codes_path, sheet = "STATIONER") %>%
+                    select(-contains("...")) %>%
+                    distinct(),
+                  by = "PROVPLATS_ANALYSMALL")
+    }
     koder_art <- select(results, LATIN = GENUS) %>% distinct() %>%
       fuzzyjoin::stringdist_left_join(readxl::read_excel(codes_path, sheet = "ARTER") %>%
                                         select(-contains("...")) %>%
