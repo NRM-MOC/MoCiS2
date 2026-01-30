@@ -75,8 +75,8 @@ read_lab_file2 <- function(path, variable, sheet, .has_provid = TRUE){
       mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
       mutate_if(is.character, ~str_replace(.x, "<", "-")) %>% # Check if "<" rather than "-" is used for LOQ
       mutate_at(-(1:5), as.numeric) %>%
-      select(-PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
-      pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = variable)    
+      select(-PROV_KOD_LABB,  -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      pivot_longer(-all_of(c("PROV_KOD_ORIGINAL", "RAPPORT_KOD_LABB")), names_to = "NRM_PARAMETERKOD", values_to = variable)    
   } else {
     readxl::read_excel(path, sheet = sheet, skip = 1, na = c("-99.99", "N/A")) %>%
       rename(PROV_KOD_ORIGINAL = ...1, PROV_KOD_LABB = ...2, GENUS = ...3, PROVPLATS_ANALYSMALL = ...4) %>%
@@ -115,9 +115,9 @@ read_lab_file_date <- function(path, sheet = "date of analysis", .has_provid = T
       filter(!is.na(PROV_KOD_ORIGINAL), !(PROV_KOD_ORIGINAL == 0)) %>%
       mutate(PROV_KOD_LABB = as.character(PROV_KOD_LABB)) %>%
       mutate_at(-(1:5), as.numeric) %>%
-      select(-PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+      select(-PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
       filter(PROV_KOD_ORIGINAL != "0") %>%
-      pivot_longer(-PROV_KOD_ORIGINAL, names_to = "NRM_PARAMETERKOD", values_to = "ANALYS_DAT") %>%
+      pivot_longer(-all_of(c("PROV_KOD_ORIGINAL", "RAPPORT_KOD_LABB")), names_to = "NRM_PARAMETERKOD", values_to = "ANALYS_DAT") %>%
       mutate(ANALYS_DAT = fix_date(ANALYS_DAT))   
   } else {
     readxl::read_excel(path, sheet = sheet, na = c("-99.99", "N/A")) %>%
@@ -145,7 +145,7 @@ read_lab_file_weight <- function(path, sheet = 8, .has_provid = TRUE){
   data <- readxl::read_excel(path = path, sheet = sheet)
   if (.has_provid){
     names(data)[1:7] <- c("PROV_KOD_ORIGINAL", "RAPPORT_KOD_LABB", "PROV_KOD_LABB", "GENUS", "PROVPLATS_ANALYSMALL", "DWEIGHT", "WWEIGHT")
-    select(data, -PROV_KOD_LABB, -RAPPORT_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
+    select(data, -PROV_KOD_LABB, -GENUS, -PROVPLATS_ANALYSMALL, -contains("...")) %>%
       mutate(DWEIGHT = as.numeric(DWEIGHT), WWEIGHT = as.numeric(WWEIGHT)) %>%
       filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))    
   } else {
@@ -240,11 +240,16 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
       select(-LATIN.y, LATIN = LATIN.x) %>%
       distinct()
   })
-  data <- left_join(results, uncertainty, by = c("PROV_KOD_ORIGINAL", "NRM_PARAMETERKOD")) %>%
-    left_join(LOD, by = c("PROV_KOD_ORIGINAL", "NRM_PARAMETERKOD")) %>%
-    left_join(LOQ, by = c("PROV_KOD_ORIGINAL", "NRM_PARAMETERKOD")) %>%
-    left_join(dates, by = c("PROV_KOD_ORIGINAL", "NRM_PARAMETERKOD")) %>%
-    left_join(weight, by = "PROV_KOD_ORIGINAL") %>%
+  if (has_provid == TRUE)
+    join_vars <- c("PROV_KOD_ORIGINAL", "NRM_PARAMETERKOD", "RAPPORT_KOD_LABB")
+  else
+    join_vars <- c("PROV_KOD_ORIGINAL", "NRM_PARAMETERKOD")
+  
+  data <- left_join(results, uncertainty, by = join_vars) %>%
+    left_join(LOD, by = join_vars) %>%
+    left_join(LOQ, by = join_vars) %>%
+    left_join(dates, by = join_vars) %>%
+    left_join(weight, by = join_vars[-2]) %>%
     cbind(general) %>%
     left_join(koder_substans, by = "NRM_PARAMETERKOD") %>%
     left_join(ackr, by = "NRM_PARAMETERKOD") %>%
