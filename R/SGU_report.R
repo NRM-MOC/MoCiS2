@@ -65,7 +65,7 @@ moc_join_SGU <- function(biodata, analysdata, add_bio_pars = TRUE){
     group_by(PROV_KOD_ORIGINAL_POOL) %>%
     summarise(PROVTAG_DAT = min(PROVTAG_DAT),
               PROVTAG_TID = NA,
-              PROVTAG_SLUTDAT = max(ANTAL_DAGAR),
+              PROVTAG_SLUTDAT = NA,
               PROVTAG_SLUTTID = NA,
               KON = pool_sex(KON),
               ANTAL = unique(ANTAL),
