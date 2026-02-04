@@ -260,10 +260,10 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     mutate(MATVARDETAL_ANM = if_else((abs(MATVARDETAL) <= RAPPORTERINGSGRANS_LOQ) |
                                        ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
            MATVARDETAL_ANM = if_else(((abs(MATVARDETAL) < RAPPORTERINGSGRANS_LOQ) & (replace_na(DETEKTIONSGRANS_LOD, 0) < abs(MATVARDETAL))) |
-                                       ((abs(MATVARDETAL) == RAPPORTERINGSGRANS_LOQ) & (!is.na(DETEKTIONSGRANS_LOD))), "", MATVARDETAL_ANM),
+                                       ((near(abs(MATVARDETAL), RAPPORTERINGSGRANS_LOQ)) & (!is.na(DETEKTIONSGRANS_LOD))), "", MATVARDETAL_ANM),
            MATVARDETAL = if_else(rep(negative_for_nondetect, n()), abs(MATVARDETAL), MATVARDETAL),
            MATV_STD = case_when((near(MATVARDETAL, DETEKTIONSGRANS_LOD) | (MATVARDETAL < DETEKTIONSGRANS_LOD)) & (MATVARDETAL_ANM == "<") ~ "b",
-                                ((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) & (MATVARDETAL_ANM == "<") ~ "q",
+                                ((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) ~ "q",
                                 MATVARDETAL > RAPPORTERINGSGRANS_LOQ ~ "",
                                 ((MATVARDETAL > DETEKTIONSGRANS_LOD) | near(MATVARDETAL, DETEKTIONSGRANS_LOD)) & (is.na(RAPPORTERINGSGRANS_LOQ)) ~ "", 
                                 is.na(DETEKTIONSGRANS_LOD) & is.na(RAPPORTERINGSGRANS_LOQ) ~ ""),
