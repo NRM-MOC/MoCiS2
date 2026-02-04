@@ -154,7 +154,7 @@ read_lab_file_weight <- function(path, sheet = 8, .has_provid = TRUE){
       mutate(DWEIGHT = as.numeric(DWEIGHT), WWEIGHT = as.numeric(WWEIGHT)) %>%
       filter(!(is.na(DWEIGHT) & is.na(WWEIGHT)))    
   }
-
+  
 }
 
 #' Title
@@ -259,6 +259,8 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     left_join(koder_stationer, by = "PROVPLATS_ANALYSMALL") %>%
     mutate(MATVARDETAL_ANM = if_else((abs(MATVARDETAL) <= RAPPORTERINGSGRANS_LOQ) |
                                        ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
+           MATVARDETAL_ANM = if_else(((abs(MATVARDETAL) < RAPPORTERINGSGRANS_LOQ) & (replace_na(DETEKTIONSGRANS_LOD, 0) < abs(MATVARDETAL))) |
+                                       ((abs(MATVARDETAL) == RAPPORTERINGSGRANS_LOQ) & (!is.na(DETEKTIONSGRANS_LOD))), "", MATVARDETAL_ANM),
            MATVARDETAL = if_else(rep(negative_for_nondetect, n()), abs(MATVARDETAL), MATVARDETAL),
            MATV_STD = case_when((near(MATVARDETAL, DETEKTIONSGRANS_LOD) | (MATVARDETAL < DETEKTIONSGRANS_LOD)) & (MATVARDETAL_ANM == "<") ~ "b",
                                 ((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) & (MATVARDETAL_ANM == "<") ~ "q",
