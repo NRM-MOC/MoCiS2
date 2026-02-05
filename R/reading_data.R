@@ -259,8 +259,7 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
     left_join(koder_stationer, by = "PROVPLATS_ANALYSMALL") %>%
     mutate(MATVARDETAL_ANM = if_else((abs(MATVARDETAL) <= RAPPORTERINGSGRANS_LOQ) |
                                        ((MATVARDETAL < 0) & (negative_for_nondetect)), "<", "", missing = ""),
-           MATVARDETAL_ANM = if_else(((abs(MATVARDETAL) < RAPPORTERINGSGRANS_LOQ) & (replace_na(DETEKTIONSGRANS_LOD, 0) < abs(MATVARDETAL))) |
-                                       ((near(abs(MATVARDETAL), RAPPORTERINGSGRANS_LOQ)) & (!is.na(DETEKTIONSGRANS_LOD))), "", MATVARDETAL_ANM),
+           MATVARDETAL_ANM = if_else(((abs(MATVARDETAL) < RAPPORTERINGSGRANS_LOQ) & (replace_na(DETEKTIONSGRANS_LOD, 0) < abs(MATVARDETAL))), "", MATVARDETAL_ANM),
            MATVARDETAL = if_else(rep(negative_for_nondetect, n()), abs(MATVARDETAL), MATVARDETAL),
            MATV_STD = case_when((near(MATVARDETAL, DETEKTIONSGRANS_LOD) | (MATVARDETAL < DETEKTIONSGRANS_LOD)) & (MATVARDETAL_ANM == "<") ~ "b",
                                 ((MATVARDETAL < RAPPORTERINGSGRANS_LOQ) | near(MATVARDETAL, RAPPORTERINGSGRANS_LOQ)) ~ "q",
