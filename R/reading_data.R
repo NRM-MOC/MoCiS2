@@ -289,7 +289,7 @@ moc_read_lab <- function(path, negative_for_nondetect = TRUE, codes_path = syste
       mutate(match = paste("*", paste(LATIN, ART, sep = " -> "))) %>%
       pull(match) %>% unique() %>% paste(collapse = "\n") %>% message()
   }
-  if (any(data$PROVPLATS_ANALYSMALL != data$NAMN_PROVPLATS)){
+  if (any(data$PROVPLATS_ANALYSMALL != data$NAMN_PROVPLATS, na.rm = TRUE)){
     message("Warning: The following locations were fuzzy matched")
     data %>% filter(PROVPLATS_ANALYSMALL != NAMN_PROVPLATS) %>%
       select(PROVPLATS_ANALYSMALL, NAMN_PROVPLATS) %>%
